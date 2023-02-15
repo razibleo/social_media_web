@@ -16,7 +16,7 @@
   },
   "plugins": ["react", "@typescript-eslint", "unused-imports"],
   "rules": {
-    "indent": ["warn", 2],
+    // "indent": ["warn", 2],
 
     "quotes": ["warn", "double"],
     "semi": ["warn", "always"],

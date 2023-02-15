@@ -8,7 +8,7 @@ class User {
   readonly username: string;
   readonly dob?: Date;
   readonly gender: Gender;
-  readonly profileUrl?: string;
+  readonly profileUrl?: string | null;
   readonly loginType: LoginType;
   readonly createdAt: Date;
   readonly updatedAt: Date;

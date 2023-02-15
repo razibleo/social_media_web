@@ -1,18 +1,19 @@
 import styles from "./signin_form.module.scss";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Spin } from "antd";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import RouteProperty from "../../../utils/routeproperty";
 import AuthScreen from "../authscreen";
 import SignUpScreen from "../signup/signup_from";
 import * as yup from "yup";
 import FutureStatus from "../../../utils/FutureStatus";
 import Fade from "../../../shared/components/transitions/fade";
-import { useReducer } from "react";
+import { useContext, useReducer } from "react";
 import { CustomReducer } from "../../../utils/helpers";
 import parseYupError from "../../../utils/yupErrorParser";
 import CustomResponse from "../../../utils/customresponse";
-import AuthApi from "../../../apis/authapi";
+import { AuthContext } from "../../../providers/authprovider";
+import ProfileScreen from "../../profile/profilescreen";
 
 const registerSchema = yup.object().shape({
   email: yup
@@ -37,6 +38,9 @@ const initialState: MyState = {
   customResponse: { status: FutureStatus.initialized },
 };
 const SignInScreen: React.FC & RouteProperty = () => {
+  const authState = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [state, dispatch] = useReducer<
     CustomReducer<MyState, Partial<MyState>>
   >((previousState, newData) => {
@@ -57,10 +61,8 @@ const SignInScreen: React.FC & RouteProperty = () => {
         strict: true,
       });
 
-      const user = await AuthApi.login(
-        registrationData.email,
-        registrationData.password
-      );
+      await authState.login(registrationData.email, registrationData.password);
+      navigate(`/user/${ProfileScreen.routeName}`);
 
       dispatch({
         customResponse: { status: FutureStatus.success },
@@ -151,6 +153,17 @@ const SignInScreen: React.FC & RouteProperty = () => {
           register now!
         </NavLink>
       </Form.Item>
+
+      <Button
+        type="primary"
+        className="login-form-button"
+        onClick={async () => {
+          await authState.signinWithGoogle();
+          navigate(`/user/${ProfileScreen.routeName}`);
+        }}
+      >
+        Sign in with Google
+      </Button>
 
       {state.customResponse.status == FutureStatus.loading && (
         <Spin size="large" />
